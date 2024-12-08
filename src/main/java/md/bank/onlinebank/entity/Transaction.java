@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Table(name = "transactions")
@@ -28,8 +30,8 @@ public class Transaction {
     private BigDecimal amount;
 
     @Column(name = "transaction_date")
-    private Date transactionDate;
+    private LocalDate transactionDate;
 
     @Column(name = "transaction_time")
-    private Time transactionTime;
+    private LocalTime transactionTime;
 }

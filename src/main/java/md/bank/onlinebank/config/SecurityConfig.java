@@ -32,10 +32,8 @@ public class SecurityConfig{
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/movie-manager/**",
-                                "/screening-manager/**",
-                                "/user-manager/**").hasRole("ADMIN")
+                        .requestMatchers("/auth/**", "/account").permitAll()
+                        //.requestMatchers("").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
