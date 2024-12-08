@@ -2,10 +2,9 @@ package md.bank.onlinebank.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.web.service.annotation.GetExchange;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Table(name="accounts")
 @Entity
@@ -25,8 +24,7 @@ public class Account {
     private User user;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private LocalDate createdAt;
 
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
