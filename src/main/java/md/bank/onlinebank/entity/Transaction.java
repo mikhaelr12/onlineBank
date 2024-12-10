@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Table(name = "transactions")
 @Entity
@@ -20,11 +18,11 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", foreignKey = @ForeignKey(name = "FK_SENDER_TRANSACTION"))
-    private User sender;
+    private Account sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id", foreignKey = @ForeignKey(name = "FK_RECEIVER_TRANSACTION"))
-    private User receiver;
+    private Account receiver;
 
     @Column(name = "amount")
     private BigDecimal amount;

@@ -3,7 +3,6 @@ package md.bank.onlinebank.controller;
 import lombok.AllArgsConstructor;
 import md.bank.onlinebank.dto.AccountDTO;
 import md.bank.onlinebank.service.AccountService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

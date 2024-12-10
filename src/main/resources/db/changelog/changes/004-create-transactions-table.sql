@@ -6,8 +6,8 @@ create table transactions
     amount           decimal(20, 2) not null,
     transaction_date date           not null,
     transaction_time time           not null,
-    constraint FK_SENDER_TRANSACTION foreign key (sender_id) references users (id),
-    constraint FK_RECEIVER_TRANSACTION foreign key (receiver_id) references users (id)
+    constraint FK_SENDER_TRANSACTION foreign key (sender_id) references accounts (id),
+    constraint FK_RECEIVER_TRANSACTION foreign key (receiver_id) references accounts (id)
 );
 
 alter table transactions owner to root;
