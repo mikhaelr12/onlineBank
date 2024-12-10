@@ -50,7 +50,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 
         //exception if the sender wants to send more money than he has
-        if(senderAccount.getBalance().subtract(transactionDTO.getAmount()).compareTo(BigDecimal.ZERO) < 0) 
+        if(senderAccount.getBalance().subtract(transactionDTO.getAmount()).compareTo(BigDecimal.ZERO) < 0)
             throw new TransactionException("Insufficient balance");
 
 
