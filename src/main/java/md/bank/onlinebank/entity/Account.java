@@ -9,6 +9,9 @@ import java.time.LocalDate;
 @Table(name="accounts")
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Account {
 
     @Id
@@ -16,10 +19,10 @@ public class Account {
     @SequenceGenerator(name = "account_id_seq", sequenceName = "account_id_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "accountNumber", nullable = false, unique = true)
+    @Column(name = "account_number", nullable = false, unique = true)
     private String accountNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER_ACCOUNT"), nullable = false)
     private User user;
 

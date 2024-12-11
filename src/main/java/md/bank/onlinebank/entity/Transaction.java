@@ -1,17 +1,18 @@
 package md.bank.onlinebank.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Table(name = "transactions")
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transaction_id_seq")
@@ -20,11 +21,19 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", foreignKey = @ForeignKey(name = "FK_SENDER_TRANSACTION"))
-    private User sender;
+    private Account sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id", foreignKey = @ForeignKey(name = "FK_RECEIVER_TRANSACTION"))
-    private User receiver;
+    private Account receiver;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_currency", foreignKey = @ForeignKey(name = "FK_SENDER_CURRENCY_TRANSACTION"))
+    private Currency senderCurrency;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_currency", foreignKey = @ForeignKey(name = "FK_RECEIVER_CURRENCY-TRANSACTION"))
+    private Currency receiverCurrency;
 
     @Column(name = "amount")
     private BigDecimal amount;
