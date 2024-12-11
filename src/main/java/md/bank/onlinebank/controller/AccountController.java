@@ -3,10 +3,10 @@ package md.bank.onlinebank.controller;
 import lombok.AllArgsConstructor;
 import md.bank.onlinebank.dto.AccountDTO;
 import md.bank.onlinebank.service.AccountService;
+import md.bank.onlinebank.service.impl.TokenExtractServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/account")
@@ -14,39 +14,39 @@ import java.util.List;
 public class AccountController {
 
     private AccountService accountService;
+    private TokenExtractServiceImpl tokenExtractService;
 
-    private String getToken(String token){
-        return token.startsWith("Bearer ") ? token.substring(7) : token;
-    }
 
     @GetMapping
-    public ResponseEntity<List<AccountDTO>> getAllAccounts(@RequestHeader("Authorization") String token) {
-        String jwt = getToken(token);
-        return ResponseEntity.ok(accountService.getAllAcounts(jwt));
+    public ResponseEntity<AccountDTO> getAccount(@RequestHeader("Authorization") String token) {
+        String jwt = tokenExtractService.getToken(token);
+        return ResponseEntity.ok(accountService.getAccount(jwt));
     }
 
     @PostMapping
     public ResponseEntity<?> createAccount(@RequestBody AccountDTO accountDTO,
                                            @RequestHeader("Authorization") String token) {
-        String jwt = getToken(token);
+
+        String jwt = tokenExtractService.getToken(token);
         accountService.createAccount(jwt, accountDTO);
         return ResponseEntity.ok("Account created");
     }
 
-    @PutMapping("/deposit/{id}")
+    @PutMapping("/deposit")
     public ResponseEntity<?> depositAccount(@RequestHeader("Authorization") String token,
-                                            @PathVariable Long id,
                                             @RequestBody AccountDTO accountDTO) {
-        String jwt = getToken(token);
-        accountService.depositAccount(jwt,id,accountDTO);
+
+        String jwt = tokenExtractService.getToken(token);
+        accountService.depositAccount(jwt,accountDTO);
         return ResponseEntity.ok("Money deposited");
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/currency")
     public ResponseEntity<?> changeCurrency(@RequestHeader("Authorization") String token,
                                             @PathVariable Long id,
                                             @RequestBody AccountDTO accountDTO) {
-        String jwt = getToken(token);
+
+        String jwt = tokenExtractService.getToken(token);
         accountService.changeCurrency(jwt,id,accountDTO);
         return ResponseEntity.ok("Currency changed");
     }
@@ -54,7 +54,7 @@ public class AccountController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccount(@RequestHeader("Authorization") String token,
                                            @PathVariable Long id){
-        String jwt = getToken(token);
+        String jwt = tokenExtractService.getToken(token);
         accountService.deleteAccount(jwt,id);
         return ResponseEntity.ok("Account deleted");
     }

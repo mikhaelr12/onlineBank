@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -33,26 +35,30 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional
     public void makeTransaction(String jwt, TransactionDTO transactionDTO) {
 
+        User user = userExtractServiceImpl.getUser(jwt);
+
         //get the accounts of the sender and receiver
-        Account receiverAccount = accountRepository.findById(transactionDTO.getReceiverId())
-                .orElseThrow(() -> new AccountException("Account not found"));
-        Account senderAccount = accountRepository.findById(transactionDTO.getSenderId())
-                .orElseThrow(() -> new AccountException("Account not found"));
+        Account receiverAccount = accountRepository.findByAccountNumber(transactionDTO.getReceiverNumber());
+        if (receiverAccount == null) {
+            throw new AccountException("No account found with number" + transactionDTO.getReceiverNumber());
+        }
+
+        Account senderAccount = accountRepository.findByUserId(user.getId());
 
         //exception if the amount is negative or 0
         if(transactionDTO.getAmount().compareTo(BigDecimal.ZERO) <= 0)
-            throw new TransactionException("Amount must be greater than zero");
-
+            throw new TransactionException("Amount must be greater than zero,"
+                    + transactionDTO.getAmount() + " is an invalid amount");
 
         //exception if the user tries to send to the same account
         if(receiverAccount.getId().equals(senderAccount.getId()))
-            throw new AccountException("You can not transfer to the same account");
+            throw new AccountException("You can not transfer to the same account, source:"
+                    + senderAccount.getUser().getUsername() + ", destination:" + receiverAccount.getId());
 
 
         //exception if the sender wants to send more money than he has
         if(senderAccount.getBalance().subtract(transactionDTO.getAmount()).compareTo(BigDecimal.ZERO) < 0) 
-            throw new TransactionException("Insufficient balance");
-
+            throw new TransactionException("Insufficient balance" + senderAccount.getBalance());
 
         //get the currencies of both accounts
         Currency senderCurrency = senderAccount.getCurrency();
@@ -77,13 +83,36 @@ public class TransactionServiceImpl implements TransactionService {
 
         accountRepository.saveAll(List.of(receiverAccount, senderAccount));
 
-        Transaction transaction = new Transaction();
-        transaction.setAmount(finalAmount);
-        transaction.setTransactionDate(LocalDate.now());
-        transaction.setTransactionTime(LocalTime.now());
-        transaction.setSender(senderAccount);
-        transaction.setReceiver(receiverAccount);
+        transactionRepository.save(Transaction.builder()
+                        .amount(finalAmount)
+                        .transactionDate(LocalDate.now())
+                        .transactionTime(LocalTime.now())
+                        .receiver(receiverAccount)
+                        .sender(senderAccount)
+                        .senderCurrency(senderCurrency)
+                        .receiverCurrency(receiverCurrency)
+                .build());
+    }
 
-        transactionRepository.save(transaction);
+    @Override
+    public List<TransactionDTO> getAllTransactions(String jwt) {
+        User user = userExtractServiceImpl.getUser(jwt);
+        Account account = accountRepository.findByUserId(user.getId());
+        List<Transaction> sender = transactionRepository.findBySenderId(account.getId());
+        List<Transaction> receiver = transactionRepository.findByReceiverId(account.getId());
+        List<Transaction> mergedLists = Stream.concat(
+                sender.stream(),
+                receiver.stream()
+        ).toList();
+        return mergedLists.stream().map(t -> TransactionDTO.builder()
+                .amount(t.getAmount())
+                .transactionDate(t.getTransactionDate())
+                .transactionTime(t.getTransactionTime())
+                .senderId(t.getSender().getId())
+                .receiverNumber(t.getReceiver().getAccountNumber())
+                .senderCurrency(t.getSenderCurrency().getId())
+                .receiverCurrency(t.getReceiverCurrency().getId())
+                .build()
+        ).toList();
     }
 }

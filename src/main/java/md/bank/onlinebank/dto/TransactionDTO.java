@@ -1,16 +1,19 @@
 package md.bank.onlinebank.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Data
+@Data @Builder
 public class TransactionDTO {
     private Long transactionId;
     private Long senderId;
-    private Long receiverId;
+    private String receiverNumber;
+    private Long senderCurrency;
+    private Long receiverCurrency;
     private BigDecimal amount;
     private LocalTime transactionTime;
     private LocalDate transactionDate;
