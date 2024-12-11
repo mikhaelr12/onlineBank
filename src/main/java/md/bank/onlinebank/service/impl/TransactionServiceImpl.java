@@ -59,6 +59,7 @@ public class TransactionServiceImpl implements TransactionService {
         if(senderAccount.getBalance().subtract(transactionDTO.getAmount()).compareTo(BigDecimal.ZERO) < 0) 
             throw new TransactionException("Insufficient balance" + senderAccount.getBalance());
 
+
         //get the currencies of both accounts
         Currency senderCurrency = senderAccount.getCurrency();
         Currency receiverCurrency = receiverAccount.getCurrency();
