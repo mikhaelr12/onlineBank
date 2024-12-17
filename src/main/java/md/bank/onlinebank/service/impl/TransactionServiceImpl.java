@@ -3,20 +3,22 @@ package md.bank.onlinebank.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import md.bank.onlinebank.dto.TransactionDTO;
+import md.bank.onlinebank.dto.request.TransactionFilterDTO;
 import md.bank.onlinebank.entity.Account;
 import md.bank.onlinebank.entity.Currency;
 import md.bank.onlinebank.entity.Transaction;
 import md.bank.onlinebank.entity.User;
+import md.bank.onlinebank.enums.SortDirection;
 import md.bank.onlinebank.exception.AccountException;
 import md.bank.onlinebank.exception.TransactionException;
 import md.bank.onlinebank.repository.AccountRepository;
 import md.bank.onlinebank.repository.TransactionRepository;
 import md.bank.onlinebank.service.TransactionService;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -95,16 +97,41 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionDTO> getAllTransactions(String jwt) {
+    public List<TransactionDTO> getAllTransactions(String jwt, TransactionFilterDTO filter) {
         User user = userExtractServiceImpl.getUser(jwt);
         Account account = accountRepository.findByUserId(user.getId());
         List<Transaction> sender = transactionRepository.findBySenderId(account.getId());
         List<Transaction> receiver = transactionRepository.findByReceiverId(account.getId());
+
+        if(filter != null && filter.getTransactionDate() != null){
+            sender = sender.stream()
+                    .filter(t -> t.getTransactionDate().equals(filter.getTransactionDate())
+                    ).toList();
+            receiver = receiver.stream()
+                    .filter(t -> t.getTransactionDate().equals(filter.getTransactionDate())
+                    ).toList();
+        }
+
         List<Transaction> mergedLists = Stream.concat(
                 sender.stream(),
                 receiver.stream()
         ).toList();
+
+        if(filter != null && filter.getSortByAmount() != null){
+            if(filter.getSortByAmount() == SortDirection.ASCENDING){
+                mergedLists = mergedLists.stream()
+                        .sorted(Comparator.comparing(Transaction::getTransactionDate)
+                        ).toList();
+            }
+            else if(filter.getSortByAmount() == SortDirection.DESCENDING){
+                mergedLists = mergedLists.stream()
+                        .sorted(Comparator.comparing(Transaction::getTransactionDate).reversed()
+                        ).toList();
+            }
+        }
+
         return mergedLists.stream().map(t -> TransactionDTO.builder()
+                .id(t.getId())
                 .amount(t.getAmount())
                 .transactionDate(t.getTransactionDate())
                 .transactionTime(t.getTransactionTime())
@@ -115,4 +142,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .build()
         ).toList();
     }
+
+
 }

@@ -28,6 +28,9 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -37,13 +40,4 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
 }

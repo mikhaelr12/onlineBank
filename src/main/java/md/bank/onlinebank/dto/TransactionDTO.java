@@ -9,7 +9,7 @@ import java.time.LocalTime;
 
 @Data @Builder
 public class TransactionDTO {
-    private Long transactionId;
+    private Long id;
     private Long senderId;
     private String receiverNumber;
     private Long senderCurrency;
