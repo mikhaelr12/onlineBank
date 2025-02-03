@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Service
-@Transactional
 @AllArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
@@ -52,9 +51,10 @@ public class TransactionServiceImpl implements TransactionService {
                     + transactionDTO.getAmount() + " is an invalid amount");
 
         //exception if the user tries to send to the same account
-        if(receiverAccount.getId().equals(senderAccount.getId()))
+        if(senderAccount.getId().equals(receiverAccount.getId()))
             throw new AccountException("You can not transfer to the same account, source:"
-                    + senderAccount.getUser().getUsername() + ", destination:" + receiverAccount.getId());
+                    + senderAccount.getUser().getUsername() + " " + senderAccount.getAccountNumber() + " " +
+                    ", destination:" + " " + senderAccount.getUser().getUsername() + " " + receiverAccount.getAccountNumber());
 
 
         //exception if the sender wants to send more money than he has
@@ -68,7 +68,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         BigDecimal finalAmount = transactionDTO.getAmount();
 
-        //if the currencies are different convert
+        //if the currencies are different, convert
         if(!senderCurrency.equals(receiverCurrency)) {
             finalAmount = currencyConverterService.convertBalance(
                     transactionDTO.getAmount(),
@@ -142,6 +142,4 @@ public class TransactionServiceImpl implements TransactionService {
                 .build()
         ).toList();
     }
-
-
 }

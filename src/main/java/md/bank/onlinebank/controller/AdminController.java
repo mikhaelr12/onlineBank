@@ -1,7 +1,9 @@
 package md.bank.onlinebank.controller;
 
 import lombok.AllArgsConstructor;
+import md.bank.onlinebank.dto.TransactionDTO;
 import md.bank.onlinebank.dto.UserDTO;
+import md.bank.onlinebank.dto.request.TransactionFilterDTO;
 import md.bank.onlinebank.dto.request.UserFilterDTO;
 import md.bank.onlinebank.service.AdminService;
 import org.springframework.http.ResponseEntity;
@@ -19,5 +21,10 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getAllUsers(@RequestBody(required = false)UserFilterDTO filter) {
         return ResponseEntity.ok(adminService.getAllUsers(filter));
+    }
+
+    @GetMapping("/transactions")
+    public ResponseEntity<List<TransactionDTO>> getAllTransactions(@RequestBody TransactionFilterDTO filter) {
+        return ResponseEntity.ok(adminService.getAllTransactions(filter));
     }
 }

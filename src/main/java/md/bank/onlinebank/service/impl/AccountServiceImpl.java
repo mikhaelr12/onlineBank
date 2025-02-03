@@ -71,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
         //find the account
         Account account = accountRepository.findByUserId(user.getId());
 
-        //exception that there is no account
+        //exception that there is already an account
         if(account != null) {
             throw new AccountException("Account already exists");
         }

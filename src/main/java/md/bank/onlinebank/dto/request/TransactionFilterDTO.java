@@ -9,5 +9,7 @@ import java.time.LocalDate;
 public class TransactionFilterDTO {
     private LocalDate transactionDate;
     private SortDirection sortByAmount;
+    private Long senderId;
+    private Long receiverId;
 }
 

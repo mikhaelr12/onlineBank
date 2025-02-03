@@ -7,7 +7,8 @@ import java.time.LocalDate;
 @Data @Builder
 public class AccountDTO {
     private String accountNumber;
-    private LocalDate createdAt;
+    @Builder.Default
+    private LocalDate createdAt = LocalDate.now();
     private BigDecimal balance;
-    private Long currency;
+    private Long currencyId;
 }
